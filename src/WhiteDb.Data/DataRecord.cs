@@ -27,14 +27,14 @@ namespace WhiteDb.Data
 
         #region GetFieldValue*
 
-        public char GetFieldValueChar(int index)
+        public virtual char GetFieldValueChar(int index)
         {
             this.AssertFieldType(index, DataType.CHAR);
 
             return NativeApiWrapper.wg_decode_char(this.database, this.GetFieldEncodedValue(index));
         }
 
-        public DateTime GetFieldValueDate(int index)
+        public virtual DateTime GetFieldValueDate(int index)
         {
             this.AssertFieldType(index, DataType.DATE);
 
@@ -43,7 +43,7 @@ namespace WhiteDb.Data
             return (new DateTime(1, 1, 1, 0, 0, 0)).AddDays(value - 1);
         }
 
-        public double GetFieldValueDouble(int index)
+        public virtual double GetFieldValueDouble(int index)
         {
             var type = this.AssertFieldType(index, DataType.Fixpoint, DataType.Double);
 
@@ -52,14 +52,14 @@ namespace WhiteDb.Data
                 : NativeApiWrapper.wg_decode_double(this.database, this.GetFieldEncodedValue(index));
         }
 
-        public int GetFieldValueInteger(int index)
+        public virtual int GetFieldValueInteger(int index)
         {
             this.AssertFieldType(index, DataType.INT);
 
             return NativeApiWrapper.wg_decode_int(this.database, this.GetFieldEncodedValue(index));
         }
 
-        public DateTime GetFieldValueTime(int index)
+        public virtual DateTime GetFieldValueTime(int index)
         {
             this.AssertFieldType(index, DataType.TIME);
 
@@ -69,6 +69,20 @@ namespace WhiteDb.Data
             var milliSeconds = (value % 100) * 10;
 
             return (new DateTime(1, 1, 1, 0, 0, 0, 0)).AddSeconds(seconds).AddMilliseconds(milliSeconds);
+        }
+
+        public virtual string GetFieldValueString(int index)
+        {
+            this.AssertFieldType(index, DataType.STR);
+
+            var dataPointer = this.GetFieldEncodedValue(index);
+
+            var len = NativeApiWrapper.wg_decode_str_len(this.database, dataPointer) + 1;
+            var bytes = new byte[len];
+
+            NativeApiWrapper.wg_decode_str_copy(this.database, dataPointer, bytes, len);
+
+            return bytes.Take(len - 1).ToArray().ToStringValue();
         }
 
         #endregion GetFieldValue*
@@ -139,6 +153,11 @@ namespace WhiteDb.Data
             }
 
             throw new InvalidOperationException("Unknown mode for DateSaveMode");
+        }
+
+        public void SetFieldValue(int index, string value)
+        {
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_str(this.database, value.ToByteArray(), null));
         }
 
         private void SetFieldValue(int index, Func<int> encodingFunction)

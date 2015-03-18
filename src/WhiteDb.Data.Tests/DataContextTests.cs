@@ -4,6 +4,8 @@
 
     using NUnit.Framework;
 
+    using WhiteDb.Data.Utils;
+
     [TestFixture]
     public class DataContextTests
     {

@@ -165,10 +165,10 @@ namespace WhiteDb.Data
         public static extern void wg_time_to_hms(IntPtr db, int time, IntPtr hr, IntPtr min, IntPtr sec, IntPtr prt);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_encode_str(IntPtr db, string str, string lang);
+        public static extern int wg_encode_str(IntPtr db, byte[] str, byte[] lang);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern string wg_decode_str(IntPtr db, int data);
+        public static extern byte[] wg_decode_str(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_lang", CallingConvention = CallingConvention.Cdecl)]
         public static extern string wg_decode_str_lang(IntPtr db, int data);
@@ -180,7 +180,7 @@ namespace WhiteDb.Data
         public static extern int wg_decode_str_lang_len(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_copy", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_decode_str_copy(IntPtr db, int data, string strbuf, int buflen);
+        public static extern int wg_decode_str_copy(IntPtr db, int data, byte[] strbuf, int buflen);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_lang_copy", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_decode_str_lang_copy(IntPtr db, int data, string langbuf, int buflen);

@@ -4,6 +4,8 @@
 
     using NUnit.Framework;
 
+    using WhiteDb.Data.Utils;
+
     [TestFixture]
     internal class DataRecordTests
     {
@@ -82,6 +84,14 @@
         }
 
         [Test]
+        public void SetField_WhenPassingString_ThenValueIsReadCorrectly()
+        {
+            const string Value = "Kuidas moos kommi sisse sai?";
+            this.record.SetFieldValue(0, Value);
+            Assert.That(this.record.GetFieldValueString(0), Is.EqualTo(Value));
+        }
+
+        [Test]
         public void SetField_WithNegativeIndex_ThrowsException()
         {
             Assert.Throws<ArgumentOutOfRangeException>(
@@ -96,8 +106,5 @@
                 () =>
                 { this.record.SetFieldValue(1, 0); });
         }
-
-        // wg_int wg_encode_record(void* db, void* data)
-        // void* wg_decode_record(void* db, wg_int data)
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace WhiteDb.Data
+﻿namespace WhiteDb.Data.Utils
 {
     public static class DatabaseUtilites
     {

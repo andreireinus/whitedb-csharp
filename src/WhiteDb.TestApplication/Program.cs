@@ -3,6 +3,7 @@
     using System;
 
     using WhiteDb.Data;
+    using WhiteDb.Data.Utils;
 
     public static class Program
     {
@@ -12,7 +13,8 @@
             using (var db = new DataContext("name"))
             {
                 var record = db.CreateRecord(2);
-                record.SetFieldValue(0, DateTime.Now, DateSaveMode.TimeOnly);
+                record.SetFieldValue(0, "aöäüõ");
+                var x = record.GetFieldValueString(0);
                 db.PrintDatabase();
             }
             /*

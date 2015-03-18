@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.8.1.0\lib\net45\NSubstitute.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\packages\NUnitTestAdapter.1.2\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
@@ -69,6 +72,10 @@
     <Compile Include="DataContextTests.cs" />
     <Compile Include="DataRecordTests.cs" />
     <Compile Include="DataSizeTests.cs" />
+    <Compile Include="GenericDataContextTests.cs" />
+    <Compile Include="Internal\ModelBinderTests.cs" />
+    <Compile Include="Internal\ModelBuilderTests.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +87,7 @@
       <Name>WhiteDb.Data</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

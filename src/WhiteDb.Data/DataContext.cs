@@ -22,14 +22,6 @@ namespace WhiteDb.Data
             this.Dispose(false);
         }
 
-        public IntPtr Pointer
-        {
-            get
-            {
-                return this.pointer;
-            }
-        }
-
         public DataRecord CreateRecord(int length)
         {
             var recordPointer = NativeApiWrapper.wg_create_record(this.pointer, length);

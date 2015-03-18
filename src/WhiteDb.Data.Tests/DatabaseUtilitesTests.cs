@@ -2,6 +2,8 @@
 {
     using NUnit.Framework;
 
+    using WhiteDb.Data.Utils;
+
     [TestFixture]
     internal class DatabaseUtilitesTests
     {
