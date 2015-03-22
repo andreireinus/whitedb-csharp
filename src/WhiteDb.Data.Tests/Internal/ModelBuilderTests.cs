@@ -30,7 +30,14 @@
             var model = builder.Build();
 
             Assert.That(model.GetType(), Is.Not.EqualTo(typeof(Person)));
-            Assert.That(model as Person, Is.Not.Null);
+        }
+
+        [Test]
+        public void Build_AddingIRecord_HasInterfaceAdded()
+        {
+            var builder = new ModelBuilder<Person>();
+            var model = builder.Build();
+            Assert.That(model is IRecord, Is.True);
         }
 
         [Test]

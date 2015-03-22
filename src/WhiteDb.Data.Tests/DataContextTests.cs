@@ -35,8 +35,8 @@
 
             using (var db = new DataContext("testdb"))
             {
-                var recordPointer = db.CreateRecord(1).Pointer;
-                Assert.That(db.GetFirstRecord().Pointer, Is.EqualTo(recordPointer));
+                var recordPointer = db.CreateRecord(1).RecordPointer;
+                Assert.That(db.GetFirstRecord().RecordPointer, Is.EqualTo(recordPointer));
             }
         }
 

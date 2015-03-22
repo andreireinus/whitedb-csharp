@@ -24,6 +24,13 @@
                 properties[index].SetValue(model, GetValue(record, index, properties[index]));
             }
 
+            if (model is IRecord)
+            {
+                var a = model as IRecord;
+                a.Database = record.DatabasePointer;
+                a.Record = record.RecordPointer;
+            }
+
             return model;
         }
 

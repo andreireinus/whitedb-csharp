@@ -17,7 +17,15 @@ namespace WhiteDb.Data
             this.length = length;
         }
 
-        public IntPtr Pointer
+        public IntPtr DatabasePointer
+        {
+            get
+            {
+                return this.database;
+            }
+        }
+
+        public IntPtr RecordPointer
         {
             get
             {

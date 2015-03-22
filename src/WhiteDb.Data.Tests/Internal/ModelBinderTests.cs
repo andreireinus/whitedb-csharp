@@ -25,5 +25,22 @@
             Assert.That(person.Age, Is.EqualTo(1));
             Assert.That(person.Name, Is.EqualTo("Kati"));
         }
+
+        [Test]
+        public void Bind_WhenBinding_ThenIRecordFieldsMapped()
+        {
+            var pointerDatabase = IntPtr.Add(IntPtr.Zero, 1);
+            var pointerRecord = IntPtr.Add(IntPtr.Zero, 2);
+
+            var binder = new ModelBinder<Person>();
+
+            var record = Substitute.For<DataRecord>(pointerDatabase, pointerRecord, 2);
+            record.GetFieldValueInteger(Arg.Is(0)).Returns(1);
+            record.GetFieldValueString(Arg.Is(1)).Returns("Kati");
+
+            var person = binder.FromRecord(record) as IRecord;
+            Assert.That(person.Database, Is.EqualTo(pointerDatabase));
+            Assert.That(person.Record, Is.EqualTo(pointerRecord));
+        }
     }
 }

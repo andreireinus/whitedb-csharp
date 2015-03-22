@@ -32,7 +32,7 @@ namespace WhiteDb.Data
         public void Delete(DataRecord record)
         {
 #warning How to check if record exists in database?
-            NativeApiWrapper.wg_delete_record(this.pointer, record.Pointer);
+            NativeApiWrapper.wg_delete_record(this.pointer, record.RecordPointer);
         }
 
         public void Dispose()

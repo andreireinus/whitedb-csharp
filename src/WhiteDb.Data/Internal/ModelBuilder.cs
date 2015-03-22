@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using System.Reflection.Emit;
+    using System.Security.Cryptography.X509Certificates;
 
     public class ModelBuilder<T> where T : class
     {
@@ -46,7 +47,44 @@
                 TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit | TypeAttributes.AutoLayout,
                 this.type);
 
+            this.ImplementRecordInterface(tb);
+
             return tb;
+        }
+
+        private void ImplementRecordInterface(TypeBuilder typeBuilder)
+        {
+            typeBuilder.AddInterfaceImplementation(typeof(IRecord));
+
+            AddProperty(typeBuilder, "Database", typeof(IntPtr));
+            AddProperty(typeBuilder, "Record", typeof(IntPtr));
+        }
+
+        private static void AddProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType)
+        {
+            const MethodAttributes MethodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.SpecialName;
+
+            FieldBuilder field = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
+
+            var getMethod = typeof(IRecord).GetProperty(propertyName).GetGetMethod();
+            var setMethod = typeof(IRecord).GetProperty(propertyName).GetSetMethod();
+
+            MethodBuilder methodBuilder = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public | MethodAttributes.Virtual, propertyType, Type.EmptyTypes);
+            ILGenerator getIl = methodBuilder.GetILGenerator();
+            getIl.Emit(OpCodes.Ldarg_0);
+            getIl.Emit(OpCodes.Ldfld, field);
+            getIl.Emit(OpCodes.Ret);
+
+            typeBuilder.DefineMethodOverride(methodBuilder, getMethod);
+
+            methodBuilder = typeBuilder.DefineMethod("set_" + propertyName, MethodAttributes.Public | MethodAttributes.Virtual, null, new[] { propertyType });
+            ILGenerator setIl = methodBuilder.GetILGenerator();
+            setIl.Emit(OpCodes.Ldarg_0);
+            setIl.Emit(OpCodes.Ldarg_1);
+            setIl.Emit(OpCodes.Stfld, field);
+            setIl.Emit(OpCodes.Ret);
+
+            typeBuilder.DefineMethodOverride(methodBuilder, setMethod);
         }
     }
 }

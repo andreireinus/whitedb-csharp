@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Internal\IRecord.cs" />
     <Compile Include="Utils\DatabaseUtilites.cs" />
     <Compile Include="DataContext.cs" />
     <Compile Include="DataContextGeneric.cs" />
