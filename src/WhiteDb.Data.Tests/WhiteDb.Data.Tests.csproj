@@ -73,10 +73,14 @@
     <Compile Include="DataRecordTests.cs" />
     <Compile Include="DataSizeTests.cs" />
     <Compile Include="GenericDataContextTests.cs" />
+    <Compile Include="Internal\IntegerValueBinderTests.cs" />
     <Compile Include="Internal\ModelBinderTests.cs" />
     <Compile Include="Internal\ModelBuilderTests.cs" />
+    <Compile Include="Internal\ValueBinderFactoryTests.cs" />
+    <Compile Include="Internal\ValueBinderTests.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\TestDataContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

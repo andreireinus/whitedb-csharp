@@ -13,8 +13,15 @@
             using (var db = new DataContext("name"))
             {
                 var record = db.CreateRecord(2);
-                record.SetFieldValue(0, "aöäüõ");
+                record.SetFieldValue(0, "kala");
                 var x = record.GetFieldValueString(0);
+
+                var record2 = db.CreateRecord(2);
+                record2.SetFieldValue(0, "Andrei");
+                record2.SetFieldValue(1, 33);
+                int val = NativeApiWrapper.wg_encode_record(record2.DatabasePointer, record2.RecordPointer);
+                NativeApiWrapper.wg_set_field(record.DatabasePointer, record.RecordPointer, 1, val);
+
                 db.PrintDatabase();
             }
             /*

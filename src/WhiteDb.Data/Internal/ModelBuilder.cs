@@ -3,7 +3,6 @@
     using System;
     using System.Reflection;
     using System.Reflection.Emit;
-    using System.Security.Cryptography.X509Certificates;
 
     public class ModelBuilder<T> where T : class
     {
@@ -62,8 +61,6 @@
 
         private static void AddProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType)
         {
-            const MethodAttributes MethodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.SpecialName;
-
             FieldBuilder field = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
             var getMethod = typeof(IRecord).GetProperty(propertyName).GetGetMethod();

@@ -52,6 +52,7 @@
     <Compile Include="Internal\ModelBuilder.cs" />
     <Compile Include="NativeApiWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueBinders\ValueBinder.cs" />
     <Compile Include="WhiteDbException.cs" />
   </ItemGroup>
   <ItemGroup>

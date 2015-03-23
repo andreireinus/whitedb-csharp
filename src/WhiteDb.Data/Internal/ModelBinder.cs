@@ -5,12 +5,15 @@
 
     public class ModelBinder<T> where T : class
     {
+        private readonly DataContext context;
+
         private readonly Type type;
 
         private readonly ModelBuilder<T> builder;
 
-        public ModelBinder()
+        public ModelBinder(DataContext context)
         {
+            this.context = context;
             this.type = typeof(T);
             this.builder = new ModelBuilder<T>();
         }
@@ -26,9 +29,9 @@
 
             if (model is IRecord)
             {
-                var a = model as IRecord;
-                a.Database = record.DatabasePointer;
-                a.Record = record.RecordPointer;
+                var recordModel = model as IRecord;
+                recordModel.Database = record.DatabasePointer;
+                recordModel.Record = record.RecordPointer;
             }
 
             return model;
@@ -46,6 +49,27 @@
             }
 
             throw new NotImplementedException(string.Format("PropertyType: {0}", property.PropertyType.Name));
+        }
+
+        public DataRecord ToRecord(T entity)
+        {
+            var properties = this.type.GetProperties();
+            var record = this.context.CreateRecord(properties.Length);
+
+            for (var index = 0; index < properties.Length; index++)
+            {
+                var value = properties[index].GetValue(entity);
+                if (value is int)
+                {
+                    record.SetFieldValue(index, (int)value);
+                }
+                else if (value is string)
+                {
+                    record.SetFieldValue(index, (string)value);
+                }
+            }
+
+            return record;
         }
     }
 }

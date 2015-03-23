@@ -2,15 +2,21 @@
 {
     using System;
 
+    using WhiteDb.Data.Internal;
+
     public class DataContext<T> : IDisposable where T : class
     {
         private bool isDisposed = false;
 
         private readonly DataContext context;
+        private readonly ModelBuilder<T> modelBuilder = new ModelBuilder<T>();
+        private readonly ModelBinder<T> modelBinder;
 
         public DataContext(string name, int size = 100000)
         {
             this.context = new DataContext(name, size);
+
+            this.modelBinder = new ModelBinder<T>(this.context);
         }
 
         ~DataContext()
@@ -42,8 +48,11 @@
             this.isDisposed = true;
         }
 
-        public void Create(T record)
+        public T Create(T entity)
         {
+            var record = this.modelBinder.ToRecord(entity);
+
+            return this.modelBinder.FromRecord(record);
         }
     }
 }
