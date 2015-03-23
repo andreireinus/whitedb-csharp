@@ -3,6 +3,8 @@
     using System;
     using System.Reflection;
 
+    using WhiteDb.Data.ValueBinders;
+
     public class ModelBinder<T> where T : class
     {
         private readonly DataContext context;
@@ -10,6 +12,8 @@
         private readonly Type type;
 
         private readonly ModelBuilder<T> builder;
+
+        private readonly ValueBinderFactory factory = new ValueBinderFactory();
 
         public ModelBinder(DataContext context)
         {
@@ -24,7 +28,7 @@
             var model = this.builder.Build();
             for (var index = 0; index < properties.Length; index++)
             {
-                properties[index].SetValue(model, GetValue(record, index, properties[index]));
+                properties[index].SetValue(model, this.GetValue(record, index, properties[index]));
             }
 
             if (model is IRecord)
@@ -37,18 +41,10 @@
             return model;
         }
 
-        private static object GetValue(DataRecord record, int index, PropertyInfo property)
+        private object GetValue(DataRecord record, int index, PropertyInfo property)
         {
-            if (property.PropertyType == typeof(int))
-            {
-                return record.GetFieldValueInteger(index);
-            }
-            if (property.PropertyType == typeof(string))
-            {
-                return record.GetFieldValueString(index);
-            }
-
-            throw new NotImplementedException(string.Format("PropertyType: {0}", property.PropertyType.Name));
+            var binder = this.factory.Get(property.PropertyType);
+            return binder.GetValue(record, index);
         }
 
         public DataRecord ToRecord(T entity)
@@ -58,15 +54,9 @@
 
             for (var index = 0; index < properties.Length; index++)
             {
+                var binder = this.factory.Get(properties[index].PropertyType);
                 var value = properties[index].GetValue(entity);
-                if (value is int)
-                {
-                    record.SetFieldValue(index, (int)value);
-                }
-                else if (value is string)
-                {
-                    record.SetFieldValue(index, (string)value);
-                }
+                binder.SetValue(record, index, value);
             }
 
             return record;

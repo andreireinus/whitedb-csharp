@@ -4,33 +4,41 @@
 
     public class ValueBinderFactory
     {
-        public ValueBinder<T> Get<T>()
+        public IValueBinder<T> Get<T>()
         {
             if (typeof(T) == typeof(int))
             {
-                return new IntegerValueBinder() as ValueBinder<T>;
+                return new IntegerValueBinder() as IValueBinder<T>;
             }
+            throw new NotImplementedException();
+        }
+
+        public IValueBinder Get(Type type)
+        {
+            if (type == typeof(int))
+            {
+                return new IntegerValueBinder();
+            }
+            if (type == typeof(string))
+            {
+                return new StringValueBinder();
+            }
+
             throw new NotImplementedException();
         }
     }
 
-    public class IntegerValueBinder : ValueBinder<int>
+    public interface IValueBinder
     {
-        public override int GetValue(DataRecord record, int index)
-        {
-            return record.GetFieldValueInteger(index);
-        }
+        object GetValue(DataRecord record, int index);
 
-        public override void SetValue(DataRecord record, int index, int value)
-        {
-            record.SetFieldValue(index, value);
-        }
+        void SetValue(DataRecord record, int index, object value);
     }
 
-    public abstract class ValueBinder<T>
+    public interface IValueBinder<T> : IValueBinder
     {
-        public abstract T GetValue(DataRecord record, int index);
+        new T GetValue(DataRecord record, int index);
 
-        public abstract void SetValue(DataRecord record, int index, T value);
+        void SetValue(DataRecord record, int index, T value);
     }
 }

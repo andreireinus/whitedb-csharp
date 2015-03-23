@@ -1,4 +1,4 @@
-﻿namespace WhiteDb.Data.Tests.Internal
+﻿namespace WhiteDb.Data.Tests.ValueBinders
 {
     using NUnit.Framework;
 

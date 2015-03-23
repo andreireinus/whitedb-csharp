@@ -1,4 +1,4 @@
-﻿namespace WhiteDb.Data.Tests.Internal
+﻿namespace WhiteDb.Data.Tests.ValueBinders
 {
     using NUnit.Framework;
 
@@ -12,7 +12,7 @@
         {
             var factory = new ValueBinderFactory();
             var binder = factory.Get<int>();
-            Assert.That(binder is ValueBinder<int>, Is.True);
+            Assert.That(binder is IValueBinder<int>, Is.True);
         }
     }
 }
