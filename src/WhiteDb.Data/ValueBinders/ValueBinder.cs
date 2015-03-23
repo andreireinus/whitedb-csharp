@@ -23,6 +23,10 @@
             {
                 return new StringValueBinder();
             }
+            if (type == typeof(int[]))
+            {
+                return new ArrayOfIntegerValueBinder();
+            }
 
             throw new NotImplementedException();
         }

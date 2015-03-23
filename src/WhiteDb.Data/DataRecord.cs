@@ -5,12 +5,12 @@ namespace WhiteDb.Data
 
     public class DataRecord
     {
-        private readonly IntPtr database;
+        private readonly DataContext database;
 
         private readonly int length;
         private readonly IntPtr record;
 
-        public DataRecord(IntPtr database, IntPtr record, int length)
+        public DataRecord(DataContext database, IntPtr record, int length)
         {
             this.database = database;
             this.record = record;
@@ -21,7 +21,7 @@ namespace WhiteDb.Data
         {
             get
             {
-                return this.database;
+                return this.database.Pointer;
             }
         }
 
@@ -39,14 +39,14 @@ namespace WhiteDb.Data
         {
             this.AssertFieldType(index, DataType.CHAR);
 
-            return NativeApiWrapper.wg_decode_char(this.database, this.GetFieldEncodedValue(index));
+            return NativeApiWrapper.wg_decode_char(this.database.Pointer, this.GetFieldEncodedValue(index));
         }
 
         public virtual DateTime GetFieldValueDate(int index)
         {
             this.AssertFieldType(index, DataType.DATE);
 
-            var value = NativeApiWrapper.wg_decode_date(this.database, this.GetFieldEncodedValue(index));
+            var value = NativeApiWrapper.wg_decode_date(this.database.Pointer, this.GetFieldEncodedValue(index));
 
             return (new DateTime(1, 1, 1, 0, 0, 0)).AddDays(value - 1);
         }
@@ -56,22 +56,22 @@ namespace WhiteDb.Data
             var type = this.AssertFieldType(index, DataType.Fixpoint, DataType.Double);
 
             return type == DataType.Fixpoint
-                ? NativeApiWrapper.wg_decode_fixpoint(this.database, this.GetFieldEncodedValue(index))
-                : NativeApiWrapper.wg_decode_double(this.database, this.GetFieldEncodedValue(index));
+                ? NativeApiWrapper.wg_decode_fixpoint(this.database.Pointer, this.GetFieldEncodedValue(index))
+                : NativeApiWrapper.wg_decode_double(this.database.Pointer, this.GetFieldEncodedValue(index));
         }
 
         public virtual int GetFieldValueInteger(int index)
         {
             this.AssertFieldType(index, DataType.INT);
 
-            return NativeApiWrapper.wg_decode_int(this.database, this.GetFieldEncodedValue(index));
+            return NativeApiWrapper.wg_decode_int(this.database.Pointer, this.GetFieldEncodedValue(index));
         }
 
         public virtual DateTime GetFieldValueTime(int index)
         {
             this.AssertFieldType(index, DataType.TIME);
 
-            var value = NativeApiWrapper.wg_decode_time(this.database, this.GetFieldEncodedValue(index));
+            var value = NativeApiWrapper.wg_decode_time(this.database.Pointer, this.GetFieldEncodedValue(index));
 
             var seconds = value / 100;
             var milliSeconds = (value % 100) * 10;
@@ -85,12 +85,23 @@ namespace WhiteDb.Data
 
             var dataPointer = this.GetFieldEncodedValue(index);
 
-            var len = NativeApiWrapper.wg_decode_str_len(this.database, dataPointer) + 1;
+            var len = NativeApiWrapper.wg_decode_str_len(this.database.Pointer, dataPointer) + 1;
             var bytes = new byte[len];
 
-            NativeApiWrapper.wg_decode_str_copy(this.database, dataPointer, bytes, len);
+            NativeApiWrapper.wg_decode_str_copy(this.database.Pointer, dataPointer, bytes, len);
 
             return bytes.Take(len - 1).ToArray().ToStringValue();
+        }
+
+        public DataRecord GetFieldValueRecord(int index)
+        {
+            this.AssertFieldType(index, DataType.RECORD);
+
+            var dataPointer = this.GetFieldEncodedValue(index);
+            var recordPointer = NativeApiWrapper.wg_decode_record(this.database.Pointer, dataPointer);
+            var length = NativeApiWrapper.wg_get_record_len(this.database.Pointer, recordPointer);
+
+            return new DataRecord(this.database, recordPointer, length);
         }
 
         #endregion GetFieldValue*
@@ -107,7 +118,7 @@ namespace WhiteDb.Data
         {
             this.AssertFieldIndex(index);
 
-            var type = NativeApiWrapper.wg_get_field_type(this.database, this.record, index);
+            var type = NativeApiWrapper.wg_get_field_type(this.database.Pointer, this.record, index);
 
             if (allowedTypes.Any(allowedType => allowedType == type))
             {
@@ -121,30 +132,30 @@ namespace WhiteDb.Data
         {
             this.AssertFieldIndex(index);
 
-            return NativeApiWrapper.wg_get_field(this.database, this.record, index);
+            return NativeApiWrapper.wg_get_field(this.database.Pointer, this.record, index);
         }
 
         #region SetFieldValue overloads
 
         public void SetFieldValue(int index, int value)
         {
-            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_int(this.database, value));
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_int(this.database.Pointer, value));
         }
 
         public void SetFieldValue(int index, char value)
         {
-            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_char(this.database, value));
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_char(this.database.Pointer, value));
         }
 
         public void SetFieldValue(int index, double value)
         {
             if (value >= -800 && value <= 800)
             {
-                this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_fixpoint(this.database, value));
+                this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_fixpoint(this.database.Pointer, value));
                 return;
             }
 
-            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_double(this.database, value));
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_double(this.database.Pointer, value));
         }
 
         public void SetFieldValue(int index, DateTime value, DateSaveMode mode)
@@ -152,11 +163,11 @@ namespace WhiteDb.Data
             switch (mode)
             {
                 case DateSaveMode.DateOnly:
-                    this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_date(this.database, NativeApiWrapper.wg_ymd_to_date(this.database, value.Year, value.Month, value.Day)));
+                    this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_date(this.database.Pointer, NativeApiWrapper.wg_ymd_to_date(this.database.Pointer, value.Year, value.Month, value.Day)));
                     return;
 
                 case DateSaveMode.TimeOnly:
-                    this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_time(this.database, NativeApiWrapper.wg_hms_to_time(this.database, value.Hour, value.Minute, value.Second, value.Millisecond / 10)));
+                    this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_time(this.database.Pointer, NativeApiWrapper.wg_hms_to_time(this.database.Pointer, value.Hour, value.Minute, value.Second, value.Millisecond / 10)));
                     return;
             }
 
@@ -165,7 +176,12 @@ namespace WhiteDb.Data
 
         public void SetFieldValue(int index, string value)
         {
-            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_str(this.database, value.ToByteArray(), null));
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_str(this.database.Pointer, value.ToByteArray(), null));
+        }
+
+        public void SetFieldValue(int index, DataRecord subRecord)
+        {
+            this.SetFieldValue(index, () => NativeApiWrapper.wg_encode_record(this.database.Pointer, subRecord.RecordPointer));
         }
 
         private void SetFieldValue(int index, Func<int> encodingFunction)
@@ -173,7 +189,7 @@ namespace WhiteDb.Data
             this.AssertFieldIndex(index);
 
             var dataValue = encodingFunction();
-            var returnCode = NativeApiWrapper.wg_set_field(this.database, this.record, index, dataValue);
+            var returnCode = NativeApiWrapper.wg_set_field(this.database.Pointer, this.record, index, dataValue);
             if (returnCode != 0)
             {
                 throw new WhiteDbException(returnCode, "Encoding or setting field value failed!");
@@ -181,5 +197,10 @@ namespace WhiteDb.Data
         }
 
         #endregion SetFieldValue overloads
+
+        public DataRecord CreateRecord(int fieldCount)
+        {
+            return this.database.CreateRecord(fieldCount);
+        }
     }
 }

@@ -22,11 +22,19 @@ namespace WhiteDb.Data
             this.Dispose(false);
         }
 
+        public IntPtr Pointer
+        {
+            get
+            {
+                return this.pointer;
+            }
+        }
+
         public DataRecord CreateRecord(int length)
         {
             var recordPointer = NativeApiWrapper.wg_create_record(this.pointer, length);
 
-            return new DataRecord(this.pointer, recordPointer, length);
+            return new DataRecord(this, recordPointer, length);
         }
 
         public void Delete(DataRecord record)
@@ -52,7 +60,7 @@ namespace WhiteDb.Data
 
             var length = NativeApiWrapper.wg_get_record_len(this.pointer, recordPointer);
 
-            return new DataRecord(this.pointer, recordPointer, length);
+            return new DataRecord(this, recordPointer, length);
         }
 
         public void PrintDatabase()

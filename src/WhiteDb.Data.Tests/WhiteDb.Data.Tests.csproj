@@ -76,6 +76,8 @@
     <Compile Include="Internal\IntegerValueBinderTests.cs" />
     <Compile Include="Internal\ModelBinderTests.cs" />
     <Compile Include="Internal\ModelBuilderTests.cs" />
+    <Compile Include="Models\ArrayOfIntegers.cs" />
+    <Compile Include="Models\EmptyModel.cs" />
     <Compile Include="ValueBinders\ValueBinderFactoryTests.cs" />
     <Compile Include="ValueBinders\ValueBinderTests.cs" />
     <Compile Include="Models\Person.cs" />

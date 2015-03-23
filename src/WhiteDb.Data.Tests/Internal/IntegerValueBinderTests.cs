@@ -15,9 +15,10 @@
         [Test]
         public void GetValue_WHEN_EXPECTED_RESULT()
         {
+            var db = new TestDataContext();
             var binder = new IntegerValueBinder();
 
-            var record = Substitute.For<DataRecord>(IntPtr.Zero, IntPtr.Zero, 1);
+            var record = Substitute.For<DataRecord>(db, IntPtr.Zero, 1);
             record.GetFieldValueInteger(Arg.Is(0)).Returns(23);
 
             var value = binder.GetValue(record, 0);

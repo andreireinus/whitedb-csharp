@@ -52,6 +52,7 @@
     <Compile Include="Internal\ModelBuilder.cs" />
     <Compile Include="NativeApiWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValueBinders\ArrayOfIntegerValueBinder.cs" />
     <Compile Include="ValueBinders\IntegerValueBinder.cs" />
     <Compile Include="ValueBinders\StringValueBinder.cs" />
     <Compile Include="ValueBinders\ValueBinder.cs" />
