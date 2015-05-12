@@ -1,13 +1,27 @@
 ﻿namespace WhiteDb.Data.Tests.Utils
 {
-    using WhiteDb.Data.Utils;
-
     public class TestDataContext : DataContext
     {
-        public TestDataContext(int size = 100000)
-            : base("testdb", size)
+        private const string DatabaseName = "2";
+
+        public TestDataContext(int size = 1000000)
+            : base(DatabaseName, size)
         {
-            DatabaseUtilites.EmptyDatabase("testdb");
+            this.EmptyDatabase();
+        }
+
+        private void EmptyDatabase()
+        {
+            DataRecord record;
+            do
+            {
+                record = this.GetFirstRecord();
+                if (record != null)
+                {
+                    this.Delete(record);
+                }
+            }
+            while (record != null);
         }
     }
 }

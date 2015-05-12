@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WhiteDb.Data</RootNamespace>
     <AssemblyName>WhiteDb.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -39,6 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexApi.cs" />
+    <Compile Include="Internal\IQueryContext.cs" />
+    <Compile Include="Internal\Queryable.cs" />
+    <Compile Include="Internal\QueryBuilder.cs" />
+    <Compile Include="Internal\QueryCondition.cs" />
+    <Compile Include="ConditionOperator.cs" />
+    <Compile Include="Internal\QueryContext.cs" />
+    <Compile Include="Internal\QueryProvider.cs" />
+    <Compile Include="OsHelper.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="QueryBuilder.cs" />
     <Compile Include="Internal\IRecord.cs" />
     <Compile Include="Utils\DatabaseUtilites.cs" />
     <Compile Include="DataContext.cs" />
@@ -52,7 +67,6 @@
     <Compile Include="Internal\ModelBuilder.cs" />
     <Compile Include="NativeApiWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValueBinders\ArrayOfIntegerValueBinder.cs" />
     <Compile Include="ValueBinders\IntegerValueBinder.cs" />
     <Compile Include="ValueBinders\StringValueBinder.cs" />
     <Compile Include="ValueBinders\ValueBinder.cs" />
@@ -61,11 +75,11 @@
   <ItemGroup>
     <Content Include="..\..\lib\wgdb.dll">
       <Link>wgdb.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

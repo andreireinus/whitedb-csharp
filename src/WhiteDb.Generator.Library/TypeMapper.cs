@@ -15,15 +15,16 @@
                 case "wg_query*": return "IntPtr";
                 case "wg_int*": return "IntPtr";
                 case "int*": return "IntPtr";
+                case "wg_query_arg*": return "IntPtr";
 
                 case "char*": return "string";
 
                 case "void": return "void";
                 case "int": return "int";
                 case "wg_int": return "int";
+                case "wg_uint": return "int";
                 case "double": return "double";
                 case "char": return "char";
-                case "wg_query": return "WgQuery";
 
                 default:
                     throw new Exception("unknown type: " + type);

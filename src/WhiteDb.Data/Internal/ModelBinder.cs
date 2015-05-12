@@ -7,7 +7,7 @@
 
     public class ModelBinder<T> where T : class
     {
-        private readonly DataContext context;
+        private readonly IntPtr databasePointer;
 
         private readonly Type type;
 
@@ -15,9 +15,9 @@
 
         private readonly ValueBinderFactory factory = new ValueBinderFactory();
 
-        public ModelBinder(DataContext context)
+        public ModelBinder(IntPtr databasePointer)
         {
-            this.context = context;
+            this.databasePointer = databasePointer;
             this.type = typeof(T);
             this.builder = new ModelBuilder<T>();
         }
@@ -50,7 +50,7 @@
         public DataRecord ToRecord(T entity)
         {
             var properties = this.type.GetProperties();
-            var record = this.context.CreateRecord(properties.Length);
+            var record = DataRecord.Create(this.databasePointer, properties.Length);
 
             for (var index = 0; index < properties.Length; index++)
             {
@@ -60,6 +60,21 @@
             }
 
             return record;
+        }
+
+        public uint GetFieldIndex(MemberInfo member)
+        {
+            var properties = this.type.GetProperties();
+
+            for (uint index = 0; index < properties.Length; index++)
+            {
+                if (properties[index] == member)
+                {
+                    return index;
+                }
+            }
+
+            throw new InvalidOperationException("Unknown member in type");
         }
     }
 }

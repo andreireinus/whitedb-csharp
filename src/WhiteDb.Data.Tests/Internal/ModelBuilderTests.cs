@@ -44,11 +44,12 @@
         public void Build_Person_ValuesAreSame()
         {
             var builder = new ModelBuilder<Person>();
-            var expected = new Person { Age = 20, Name = "Kati" };
+            var expected = new Person { Age = 20, FirstName = "Kati", LastName = "Karu" };
             var actual = builder.Build(expected);
 
             Assert.That(ReferenceEquals(expected, actual), Is.False);
-            Assert.That(actual.Name, Is.EqualTo(expected.Name));
+            Assert.That(actual.FirstName, Is.EqualTo(expected.FirstName));
+            Assert.That(actual.LastName, Is.EqualTo(expected.LastName));
             Assert.That(actual.Age, Is.EqualTo(expected.Age));
         }
 

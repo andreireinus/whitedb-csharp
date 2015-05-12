@@ -22,9 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Speed", "Speed", "{6C1E21CB-FE67-43D7-99FA-83563DF6E18C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhiteDb.Speed.Runner", "WhiteDb.Speed.Runner\WhiteDb.Speed.Runner.csproj", "{0863CCF3-FBA9-4C85-8315-0E6F90670DF2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9D80E988-34D2-4079-A039-676735F86EBB}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,10 +57,6 @@ Global
 		{E8D78EF8-3CA4-440E-AF2B-8D09C04B6736}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8D78EF8-3CA4-440E-AF2B-8D09C04B6736}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8D78EF8-3CA4-440E-AF2B-8D09C04B6736}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0863CCF3-FBA9-4C85-8315-0E6F90670DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0863CCF3-FBA9-4C85-8315-0E6F90670DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0863CCF3-FBA9-4C85-8315-0E6F90670DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0863CCF3-FBA9-4C85-8315-0E6F90670DF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +65,5 @@ Global
 		{46DC5882-B4CE-4030-B31F-AE4ED954ED4F} = {0B9A6C3E-B710-4B40-9A01-AFFFE3801FC9}
 		{6DD44916-E33D-41DF-8F4F-7DF70B2BAC7F} = {0B9A6C3E-B710-4B40-9A01-AFFFE3801FC9}
 		{06470C37-02CE-462A-90C8-426D63E7A5B3} = {0B9A6C3E-B710-4B40-9A01-AFFFE3801FC9}
-		{0863CCF3-FBA9-4C85-8315-0E6F90670DF2} = {6C1E21CB-FE67-43D7-99FA-83563DF6E18C}
 	EndGlobalSection
 EndGlobal

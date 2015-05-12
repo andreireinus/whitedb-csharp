@@ -3,10 +3,12 @@ namespace WhiteDb.Data
     using System;
     using System.Runtime.InteropServices;
 
-    public static class NativeApiWrapper
+    using WhiteDb.Data.Internal;
+
+    public static class NativeApi
     {
         [DllImport("wgdb.dll", EntryPoint = "wg_attach_database", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr wg_attach_database(string dbasename, int size);
+        public static extern IntPtr wg_attach_database(string dbasename, long size);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_attach_existing_database", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr wg_attach_existing_database(string dbasename);
@@ -52,6 +54,12 @@ namespace WhiteDb.Data
 
         [DllImport("wgdb.dll", EntryPoint = "wg_get_next_record", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr wg_get_next_record(IntPtr db, IntPtr record);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_get_first_parent", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_get_first_parent(IntPtr db, IntPtr record);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_get_next_parent", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_get_next_parent(IntPtr db, IntPtr record, IntPtr parent);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_get_record_len", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_get_record_len(IntPtr db, IntPtr record);
@@ -159,16 +167,16 @@ namespace WhiteDb.Data
         public static extern int wg_hms_to_time(IntPtr db, int hr, int min, int sec, int prt);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_date_to_ymd", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void wg_date_to_ymd(IntPtr db, int date, int yr, int mo, int day);
+        public static extern void wg_date_to_ymd(IntPtr db, int date, IntPtr yr, IntPtr mo, IntPtr day);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_time_to_hms", CallingConvention = CallingConvention.Cdecl)]
         public static extern void wg_time_to_hms(IntPtr db, int time, IntPtr hr, IntPtr min, IntPtr sec, IntPtr prt);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_encode_str(IntPtr db, byte[] str, byte[] lang);
+        public static extern int wg_encode_str(IntPtr db, byte[] bytes, string lang);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte[] wg_decode_str(IntPtr db, int data);
+        public static extern string wg_decode_str(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_lang", CallingConvention = CallingConvention.Cdecl)]
         public static extern string wg_decode_str_lang(IntPtr db, int data);
@@ -180,7 +188,7 @@ namespace WhiteDb.Data
         public static extern int wg_decode_str_lang_len(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_copy", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_decode_str_copy(IntPtr db, int data, byte[] strbuf, int buflen);
+        public static extern int wg_decode_str_copy(IntPtr db, int data, byte[] bytes, int buflen);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_decode_str_lang_copy", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_decode_str_lang_copy(IntPtr db, int data, string langbuf, int buflen);
@@ -320,6 +328,15 @@ namespace WhiteDb.Data
         [DllImport("wgdb.dll", EntryPoint = "wg_import_db_csv", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_import_db_csv(IntPtr db, string filename);
 
+        [DllImport("wgdb.dll", EntryPoint = "wg_make_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_make_query(IntPtr db, IntPtr matchrec, int reclen, QueryCondition[] arglist, int argc);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_make_query_rc", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_make_query_rc(IntPtr db, IntPtr matchrec, int reclen, IntPtr arglist, int argc, int rowlimit);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_fetch", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_fetch(IntPtr db, IntPtr query);
+
         [DllImport("wgdb.dll", EntryPoint = "wg_free_query", CallingConvention = CallingConvention.Cdecl)]
         public static extern void wg_free_query(IntPtr db, IntPtr query);
 
@@ -345,13 +362,13 @@ namespace WhiteDb.Data
         public static extern int wg_encode_query_param_var(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_query_param_int", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_encode_query_param_int(IntPtr db, int data);
+        public static extern UIntPtr wg_encode_query_param_int(IntPtr db, int data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_query_param_double", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_encode_query_param_double(IntPtr db, double data);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_query_param_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_encode_query_param_str(IntPtr db, string data, string lang);
+        public static extern UIntPtr wg_encode_query_param_str(IntPtr db, string data, string lang);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_query_param_xmlliteral", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_encode_query_param_xmlliteral(IntPtr db, string data, string xsdtype);
@@ -360,24 +377,51 @@ namespace WhiteDb.Data
         public static extern int wg_encode_query_param_uri(IntPtr db, string data, string prefix);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_free_query_param", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_free_query_param(IntPtr db, int data);
+        public static extern int wg_free_query_param(IntPtr db, uint data);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record(IntPtr db, int fieldnr, int cond, int data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_null", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_null(IntPtr db, int fieldnr, int cond, string data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_record", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_record(IntPtr db, int fieldnr, int cond, IntPtr data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_char", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_char(IntPtr db, int fieldnr, int cond, char data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_fixpoint", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_fixpoint(IntPtr db, int fieldnr, int cond, double data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_date", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_date(IntPtr db, int fieldnr, int cond, int data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_time", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_time(IntPtr db, int fieldnr, int cond, int data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_var", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_var(IntPtr db, int fieldnr, int cond, int data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_int", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_int(IntPtr db, int fieldnr, int cond, int data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_double", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_double(IntPtr db, int fieldnr, int cond, double data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_str", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_str(IntPtr db, int fieldnr, int cond, string data, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_xmlliteral", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_xmlliteral(IntPtr db, int fieldnr, int cond, string data, string xsdtype, IntPtr lastrecord);
+
+        [DllImport("wgdb.dll", EntryPoint = "wg_find_record_uri", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr wg_find_record_uri(IntPtr db, int fieldnr, int cond, string data, string prefix, IntPtr lastrecord);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_register_external_db", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_register_external_db(IntPtr db, IntPtr extdb);
 
         [DllImport("wgdb.dll", EntryPoint = "wg_encode_external_data", CallingConvention = CallingConvention.Cdecl)]
         public static extern int wg_encode_external_data(IntPtr db, IntPtr extdb, int encoded);
-
-        [DllImport("wgdb.dll", EntryPoint = "wg_parse_json_file", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_parse_json_file(IntPtr db, string filename);
-
-        [DllImport("wgdb.dll", EntryPoint = "wg_check_json", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_check_json(IntPtr db, string buf);
-
-        [DllImport("wgdb.dll", EntryPoint = "wg_parse_json_document", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_parse_json_document(IntPtr db, string buf, IntPtr document);
-
-        [DllImport("wgdb.dll", EntryPoint = "wg_parse_json_fragment", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wg_parse_json_fragment(IntPtr db, string buf, IntPtr document);
     }
 }

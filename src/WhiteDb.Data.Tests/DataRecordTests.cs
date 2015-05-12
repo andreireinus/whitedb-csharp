@@ -4,6 +4,7 @@
 
     using NUnit.Framework;
 
+    using WhiteDb.Data.Tests.Utils;
     using WhiteDb.Data.Utils;
 
     [TestFixture]
@@ -16,8 +17,7 @@
         [SetUp]
         public void Setup()
         {
-            DatabaseUtilites.DeleteDatabase("testdb");
-            this.db = new DataContext("testdb");
+            this.db = new TestDataContext();
 
             this.record = this.db.CreateRecord(1);
         }
@@ -25,11 +25,13 @@
         [TearDown]
         public void TearDown()
         {
-            if (this.db != null)
+            if (this.db == null)
             {
-                this.db.Dispose();
-                this.db = null;
+                return;
             }
+
+            this.db.Dispose();
+            this.db = null;
         }
 
         [Test]
@@ -94,17 +96,20 @@
         [Test]
         public void SetField_WithNegativeIndex_ThrowsException()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () =>
-                { this.record.SetFieldValue(-1, 0); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { this.record.SetFieldValue(-1, 0); });
         }
 
         [Test]
         public void SetField_WithIndexLargerThanFieldCount_ThrowException()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () =>
-                { this.record.SetFieldValue(1, 0); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { this.record.SetFieldValue(1, 0); });
+        }
+
+        [Test]
+        public void SetField_TryingToReadIncorrectField_ThrowsException()
+        {
+            this.record.SetFieldValue(0, 100.0);
+            Assert.Throws<InvalidOperationException>(() => { this.record.GetFieldValueInteger(0); });
         }
     }
 }

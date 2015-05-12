@@ -10,17 +10,7 @@
         [Test]
         public void DeleteDatabase_WhenDatabaseExists_DatabaseIsDeleted()
         {
-            Assert.DoesNotThrow(() => DatabaseUtilites.DeleteDatabase("does-not-exist"));
-        }
-
-        [Test]
-        public void DeleteDatabase_WhenDatabaseInUse_ShouldThrowException()
-        {
-            const string DatabaseName = "name";
-            using (new DataContext(DatabaseName, 10000))
-            {
-                DatabaseUtilites.DeleteDatabase(DatabaseName);
-            }
+            Assert.DoesNotThrow(() => DatabaseUtilites.DeleteDatabase("1234"));
         }
     }
 }

@@ -4,71 +4,76 @@ namespace WhiteDb.Data
 
     public class DataContext : IDisposable
     {
-        private bool isDisposed = false;
-        private IntPtr pointer;
+        private bool isDisposed;
 
-        public DataContext(string name, int size = 100000)
+        public DataContext(string name, int size = 100000000)
         {
-            this.pointer = NativeApiWrapper.wg_attach_database(name, size);
+            this.Pointer = NativeApi.wg_attach_existing_database(name);
+            if (this.Pointer == IntPtr.Zero)
+            {
+#if __MonoCS__
+                this.pointer = NativeApi.wg_attach_database(name, size);
+#else
+                this.Pointer = NativeApi.wg_attach_local_database(size);
+#endif
+            }
 
-            if (this.pointer == null)
+            if (this.Pointer == IntPtr.Zero)
             {
                 throw new WhiteDbException(-1, "Unable to attach database");
             }
         }
 
-        ~DataContext()
-        {
-            this.Dispose(false);
-        }
-
-        public IntPtr Pointer
-        {
-            get
-            {
-                return this.pointer;
-            }
-        }
+        public IntPtr Pointer { get; private set; }
 
         public DataRecord CreateRecord(int length)
         {
-            var recordPointer = NativeApiWrapper.wg_create_record(this.pointer, length);
+            if (length <= 0)
+            {
+                throw new ArgumentOutOfRangeException("length", "Length must be greater than zero.");
+            }
+            var recordPointer = NativeApi.wg_create_record(this.Pointer, length);
 
-            return new DataRecord(this, recordPointer, length);
+            return new DataRecord(this.Pointer, recordPointer, length);
         }
 
         public void Delete(DataRecord record)
         {
 #warning How to check if record exists in database?
-            NativeApiWrapper.wg_delete_record(this.pointer, record.RecordPointer);
+            NativeApi.wg_delete_record(this.Pointer, record.RecordPointer);
         }
 
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         public DataRecord GetFirstRecord()
         {
-            var recordPointer = NativeApiWrapper.wg_get_first_record(this.pointer);
+            var recordPointer = NativeApi.wg_get_first_record(this.Pointer);
 
             if (recordPointer == IntPtr.Zero)
             {
                 return null;
             }
 
-            var length = NativeApiWrapper.wg_get_record_len(this.pointer, recordPointer);
-
-            return new DataRecord(this, recordPointer, length);
+            return new DataRecord(this.Pointer, recordPointer);
         }
 
-        public void PrintDatabase()
+        public DataRecord GetNextRecord(DataRecord record)
         {
-            NativeApiWrapper.wg_print_db(this.pointer);
+            var recordPointer = NativeApi.wg_get_next_record(this.Pointer, record.RecordPointer);
+            if (recordPointer == IntPtr.Zero)
+            {
+                return null;
+            }
+            return new DataRecord(this.Pointer, recordPointer);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -78,13 +83,18 @@ namespace WhiteDb.Data
                 }
             }
 
-            if (this.pointer != IntPtr.Zero)
+            if (this.Pointer != IntPtr.Zero)
             {
-                NativeApiWrapper.wg_detach_database(this.pointer);
-                this.pointer = IntPtr.Zero;
+                NativeApi.wg_detach_database(this.Pointer);
+                this.Pointer = IntPtr.Zero;
             }
 
             this.isDisposed = true;
+        }
+
+        public QueryBuilder CreateQueryBuilder()
+        {
+            return new QueryBuilder(this.Pointer);
         }
     }
 }

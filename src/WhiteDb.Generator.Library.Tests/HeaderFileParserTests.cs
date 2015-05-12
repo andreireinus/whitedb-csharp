@@ -109,6 +109,7 @@
                 var result = this.parser.Parse(stream).ToArray();
 
                 Assert.That(result, Is.Not.Empty);
+                Assert.That(result.Any(a => a.Name == "wg_make_query"), Is.True);
             }
         }
     }

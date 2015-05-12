@@ -1,27 +1,29 @@
 ﻿namespace WhiteDb.Data
 {
     using System;
+    using System.Linq;
 
     using WhiteDb.Data.Internal;
 
-    public class DataContext<T> : IDisposable where T : class
+    public class DataContext<T> : IDisposable
+        where T : class
     {
-        private bool isDisposed = false;
+        private bool isDisposed;
 
         private readonly DataContext context;
-        private readonly ModelBuilder<T> modelBuilder = new ModelBuilder<T>();
+
         private readonly ModelBinder<T> modelBinder;
 
-        public DataContext(string name, int size = 100000)
+        public DataContext(string name, int size = 100000000)
         {
             this.context = new DataContext(name, size);
 
-            this.modelBinder = new ModelBinder<T>(this.context);
+            this.modelBinder = new ModelBinder<T>(this.context.Pointer);
         }
 
-        ~DataContext()
+        public IQueryable<T> Query()
         {
-            this.Dispose(false);
+            return new Queryable<T>(new QueryProvider(new QueryContext<T>(this.context.Pointer)));
         }
 
         public void Dispose()

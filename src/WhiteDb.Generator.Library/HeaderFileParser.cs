@@ -20,7 +20,7 @@
             return FunctionDefinition.IsMatch(line);
         }
 
-        private static readonly Regex FunctionDefinition = new Regex(@"([a-z\*]+)\ ([a-z_]+)\((.*)\);");
+        private static readonly Regex FunctionDefinition = new Regex(@"([a-z_\*]+)\ ([a-z_]+)\((.*)\);");
 
         public FunctionDefinition ParseFunctionLine(string line)
         {
@@ -73,7 +73,7 @@
             {
                 while (!reader.EndOfStream)
                 {
-                    var line = reader.ReadLine();
+                    var line = LineCleanup(reader.ReadLine());
                     if (!IsFunctionLine(line))
                     {
                         continue;
@@ -82,6 +82,11 @@
                     yield return this.ParseFunctionLine(line);
                 }
             }
+        }
+
+        private string LineCleanup(string line)
+        {
+            return line.Replace(" *", "* ");
         }
     }
 }
